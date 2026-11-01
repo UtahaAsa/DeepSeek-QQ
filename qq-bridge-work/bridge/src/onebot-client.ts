@@ -224,7 +224,11 @@ export class OneBotWebSocketClient extends EventEmitter {
   /** 返回成功动作的 data；业务失败以 Promise 拒绝，只暴露错误码。@param {string} action 动作名。@param {object} params 参数。@param {object} options 同 request。@returns {Promise<unknown>} 响应数据。 */
   async raw(action:string, params:Record<string,unknown> = {}, options?:OnebotRequestOptions):Promise<unknown> {
     const packet = await this.request(action, params, options);
-    if (packet.status !== 'ok' || packet.retcode !== 0) throw new Error(`OneBot action rejected (retcode=${packet.retcode})`);
+    if (packet.status !== 'ok' || packet.retcode !== 0) {
+      const imageCodes = ['IMAGE_NOT_CACHED','IMAGE_DISABLED','IMAGE_LIMIT','IMAGE_FORMAT_INVALID','IMAGE_DOWNLOAD_FAILED','IMAGE_DOWNLOAD_TIMEOUT','IMAGE_CHUNK_INVALID'];
+      const code = action === 'get_image' && typeof packet.message === 'string' && imageCodes.includes(packet.message) ? packet.message : null;
+      throw Object.assign(new Error(`OneBot action rejected (retcode=${packet.retcode}${code ? ', code=' + code : ''})`), code ? { code } : {});
+    }
     return packet.data;
   }
 

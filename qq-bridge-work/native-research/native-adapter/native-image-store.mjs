@@ -47,7 +47,13 @@ export function createNativeImageStore({ service, root, nativeRoots = [], receiv
   const allowedRoots = [owned, ...nativeRoots.map((value) => fs.realpathSync(value))];
   const records = new Map(), nativeIds = new Map(), downloads = new Map(), uploads = new Map(), ownedFiles = new Map(), preparations = new Set(), deletions = new Set();
   let closed = false, residentBytes = 0, reservedBytes = 0, ownedBytes = 0, cleanup = null;
-  const counts = { observed: 0, downloaded: 0, uploaded: 0, downloadFailures: 0, cacheHits: 0 };
+  const counts = { observed: 0, downloaded: 0, uploaded: 0, downloadFailures: 0, cacheHits: 0, renderedEmojiHits: 0, cacheContentMisses: 0, lastFailureStage: null, lastFailureCode: null };
+  // QQ会把收到的PNG静态表情转成JPEG，但仍以原资源MD5命名；只识别该专用原图缓存结构。
+  const renderedEmojiPath = (file, record) => record.expectedMd5 && allowedRoots.some(base => {
+    const relative=path.relative(base,file).replaceAll('\\','/');
+    const match=/^[1-9]\d{0,19}\/nt_qq\/nt_data\/Emoji\/emoji-recv\/\d{4}-\d{2}\/Ori\/([a-f0-9]{32})\.png$/i.exec(relative);
+    return match?.[1]?.toLowerCase()===record.expectedMd5;
+  });
   const active = () => { if (closed || !isActive()) throw fail('IMAGE_DISABLED'); };
   const discard = (record) => {
     if (record.bytes) { residentBytes -= record.bytes.length; record.bytes.fill(0); record.bytes = null; }
@@ -89,19 +95,22 @@ export function createNativeImageStore({ service, root, nativeRoots = [], receiv
       record = allocate({ chatType, peerUid, msgId, elementId, nativeKey, size,
         sourcePath: typeof sourcePath === 'string' && sourcePath.length <= 4096 && path.isAbsolute(sourcePath) ? sourcePath : null,
         expectedMd5: typeof md5 === 'string' && /^[a-f0-9]{32}$/i.test(md5) ? md5.toLowerCase() : null,
+        expectedWidth: Number(field(picture,'picWidth')), expectedHeight: Number(field(picture,'picHeight')),
         key: chatType + ':' + peerUid }); counts.observed++;
     }
     return { type: 'image', data: { file: record.handle } };
   }
-  async function readVerified(file, record) {
+  async function readVerified(file, record, allowRenderedEmoji = false) {
     if (typeof file !== 'string' || file.length > 4096) throw fail('IMAGE_FILE_REFUSED');
     const real = await files.realpath(file);
     if (!allowedRoots.some((base) => within(real, base)) || (await files.lstat(real)).isSymbolicLink() ||
         (!record.expectedMd5 && real.toLowerCase() !== record.destination.toLowerCase())) throw fail('IMAGE_FILE_REFUSED');
     const input = await files.open(real, 'r');
     try {
+      const renderedCandidate=allowRenderedEmoji&&renderedEmojiPath(real,record);
       const before = await input.stat();
-      if (!before.isFile() || before.size !== record.size || before.size > IMAGE_MAX_BYTES) throw fail('IMAGE_LIMIT');
+      if (!before.isFile() || before.size > IMAGE_MAX_BYTES) throw fail('IMAGE_LIMIT');
+      if (before.size !== record.size && !renderedCandidate) throw fail('IMAGE_SIZE_MISMATCH');
       const bytes = Buffer.alloc(before.size); let offset = 0;
       while (offset < bytes.length) {
         const read = await input.read(bytes, offset, bytes.length - offset, offset);
@@ -110,7 +119,10 @@ export function createNativeImageStore({ service, root, nativeRoots = [], receiv
       const after = await input.stat();
       if (before.size !== after.size || before.mtimeMs !== after.mtimeMs) throw fail('IMAGE_FILE_REFUSED');
       const info = inspectNativeImage(bytes);
-      if (record.expectedMd5 && info.md5 !== record.expectedMd5) throw fail('IMAGE_FILE_REFUSED');
+      const converted=renderedCandidate&&info.format==='jpeg'&&info.width===record.expectedWidth&&info.height===record.expectedHeight;
+      if (before.size !== record.size&&!converted) throw fail('IMAGE_SIZE_MISMATCH');
+      if (record.expectedMd5 && info.md5 !== record.expectedMd5&&!converted) throw fail('IMAGE_CONTENT_MISMATCH');
+      if(converted)counts.renderedEmojiHits++;
       active(); return { bytes, info };
     } finally { await input.close(); }
   }
@@ -118,21 +130,27 @@ export function createNativeImageStore({ service, root, nativeRoots = [], receiv
     active(); if (record.bytes) return record;
     if (record.failure) throw fail(record.failure);
     if (record.task) return record.task;
-    if (downloads.size >= 2 || residentBytes + reservedBytes + record.size > MAX_RESIDENT || ownedBytes + record.size > MAX_RESIDENT) throw fail('IMAGE_LIMIT');
-    reservedBytes += record.size;
+    const reservation=record.expectedMd5?IMAGE_MAX_BYTES:record.size;
+    if (downloads.size >= 2 || residentBytes + reservedBytes + reservation > MAX_RESIDENT || ownedBytes + record.size > MAX_RESIDENT) throw fail('IMAGE_LIMIT');
+    reservedBytes += reservation;
     record.task = (async () => {
+      let stage = 'cache';
       try {
         // 原生已缓存的原图可能不再触发下载完成通知；只接收消息自身给出的路径，且必须有 MD5。
         // readVerified 仍核对所属媒体根、普通文件、完整大小/格式/MD5，不能据此读取任意本机文件。
         if (record.expectedMd5 && record.sourcePath) {
           try {
-            const { bytes, info } = await readVerified(record.sourcePath, record);
+            const { bytes, info } = await readVerified(record.sourcePath, record, true);
             active(); record.bytes = bytes; record.info = info;
             residentBytes += bytes.length; counts.downloaded++; counts.cacheHits++; return record;
           } catch (error) {
-            if (!['ENOENT', 'ENOTDIR'].includes(error.code)) throw error;
+            // QQ的静态表情路径可能指向缩略图或尚未完整落盘的缓存。
+            // 仅内容不匹配允许回退一次消息关联下载；路径越界、链接及活动代次错误仍拒绝。
+            if (!['ENOENT', 'ENOTDIR', 'IMAGE_SIZE_MISMATCH', 'IMAGE_CONTENT_MISMATCH', 'IMAGE_FORMAT_INVALID'].includes(error.code)) throw error;
+            if (error.code.startsWith('IMAGE_')) counts.cacheContentMisses++;
           }
         }
+        stage = 'download';
         record.destination = path.join(owned, record.handle + '.download'); ownedFiles.set(record.destination, record.size); ownedBytes += record.size;
         const notification = await new Promise((resolve, reject) => {
           const key = record.chatType + ':' + record.msgId + ':' + record.elementId;
@@ -149,12 +167,17 @@ export function createNativeImageStore({ service, root, nativeRoots = [], receiv
             if (result instanceof Promise) result.catch(() => finish(fail('IMAGE_DOWNLOAD_FAILED')));
           } catch { finish(fail('IMAGE_DOWNLOAD_FAILED')); }
         });
-        const { bytes, info } = await readVerified(notification, record);
+        stage = 'verify';
+        // 首次下载也可能直接返回同一专用表情缓存中的JPEG转换文件。
+        // 与热缓存共用资源标识、路径和尺寸验证，不能只在第二次发送时接受。
+        const { bytes, info } = await readVerified(notification, record, true);
         active(); record.bytes = bytes; record.info = info; residentBytes += bytes.length; counts.downloaded++; return record;
       } catch (error) {
+        counts.lastFailureStage = stage;
+        counts.lastFailureCode = ['IMAGE_DOWNLOAD_TIMEOUT','IMAGE_DISABLED','IMAGE_FILE_REFUSED','IMAGE_LIMIT','IMAGE_SIZE_MISMATCH','IMAGE_CONTENT_MISMATCH','IMAGE_FORMAT_INVALID'].includes(error.code) ? error.code : 'IMAGE_DOWNLOAD_FAILED';
         record.failure = ['IMAGE_DOWNLOAD_TIMEOUT', 'IMAGE_DISABLED'].includes(error.code) ? error.code : 'IMAGE_DOWNLOAD_FAILED';
         counts.downloadFailures++; throw fail(record.failure);
-      } finally { reservedBytes -= record.size; record.task = null; }
+      } finally { reservedBytes -= reservation; record.task = null; }
     })();
     return record.task;
   }

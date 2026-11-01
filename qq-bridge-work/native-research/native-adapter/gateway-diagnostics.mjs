@@ -64,6 +64,11 @@ export function projectGatewayDiagnostics(value) {
       native: { state: choice(own(native, 'state'), states), startStage: choice(own(native, 'startStage'), backendStages),
         startFailureCode: choice(own(native, 'startFailureCode'), errorCodes),
         listenerHandleKind: choice(own(native, 'listenerHandleKind'), words('unobserved null number string undefined object bigint boolean function symbol')),
+        ...(own(native,'images') ? {images:{
+          ...Object.fromEntries(words('observed downloaded downloadFailures cacheHits renderedEmojiHits cacheContentMisses').map(key=>{const value=own(own(native,'images'),key);return[key,Number.isSafeInteger(value)&&value>=0?value:0];})),
+          lastFailureStage:choice(own(own(native,'images'),'lastFailureStage'),words('cache download verify')),
+          lastFailureCode:choice(own(own(native,'images'),'lastFailureCode'),words('IMAGE_DOWNLOAD_FAILED IMAGE_DOWNLOAD_TIMEOUT IMAGE_DISABLED IMAGE_FILE_REFUSED IMAGE_LIMIT IMAGE_SIZE_MISMATCH IMAGE_CONTENT_MISMATCH IMAGE_FORMAT_INVALID'))
+        }} : {}),
         ...Object.fromEntries(words('listenerRemovalVerified cleanupRequired mediaCleanupFailed socialCleanupFailed profileCleanupFailed stickerCleanupFailed').map(key => [key, boolean(native, key)])),
         ...(own(native, 'stickers') ? { stickers: Object.fromEntries(words('listReads collectAttempts confirmed alreadyCollected unknown stagedFiles').map(key => {
           const value = own(own(native, 'stickers'), key); return [key, Number.isSafeInteger(value) && value >= 0 && value <= 1000000 ? value : 0];
