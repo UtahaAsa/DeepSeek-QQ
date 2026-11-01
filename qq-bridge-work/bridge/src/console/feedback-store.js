@@ -1,0 +1,48 @@
+// Generated from console/feedback-store.ts. Edit the TypeScript source and run build:typed.
+import fs from 'node:fs';
+/**
+ * 反馈历史与工具日志读取器，构造时不读写文件。
+ * @param {object} options feedbackFile/toolLogFile限定实例文件；JSON读写与脱敏函数沿用宿主实现。
+ * @returns {object} 读取、追加、清空方法；反馈最多500条，工具日志跳过坏行。
+ * @note 同步文件操作；反馈写入异常向上抛出，工具日志读取/清空沿用既有容错行为。
+ */
+export function createFeedbackStore({ feedbackFile: FEEDBACK_FILE, toolLogFile: TOOL_LOG_FILE, readJsonSafe, atomicWriteJson, redactSensitiveText }) {
+    function readFeedbackEntries() {
+        const data = readJsonSafe(FEEDBACK_FILE, []);
+        return Array.isArray(data) ? data : [];
+    }
+    function appendFeedbackEntry(entry) {
+        const safeEntry = {
+            ...entry,
+            ...(typeof entry?.message === 'string' ? { message: redactSensitiveText(entry.message) } : {})
+        };
+        const list = readFeedbackEntries();
+        list.push(safeEntry);
+        if (list.length > 500)
+            list.splice(0, list.length - 500);
+        atomicWriteJson(FEEDBACK_FILE, list);
+    }
+    function readToolLog(limit = 200) {
+        try {
+            const raw = fs.readFileSync(TOOL_LOG_FILE, 'utf8');
+            const lines = raw.split('\n').filter(Boolean);
+            const parsed = [];
+            for (const line of lines.slice(-Math.max(1, Math.min(1000, Number(limit) || 200)))) {
+                try {
+                    parsed.push(JSON.parse(line));
+                }
+                catch { }
+            }
+            return parsed;
+        }
+        catch {
+            return [];
+        }
+    }
+    return { readFeedbackEntries, appendFeedbackEntry, readToolLog,
+        clearFeedback: () => atomicWriteJson(FEEDBACK_FILE, []),
+        clearToolLog: () => { try {
+            fs.writeFileSync(TOOL_LOG_FILE, '', 'utf8');
+        }
+        catch { } } };
+}

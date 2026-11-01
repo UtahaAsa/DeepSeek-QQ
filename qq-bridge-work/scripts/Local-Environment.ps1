@@ -1,0 +1,19 @@
+$ErrorActionPreference = 'Stop'
+$BridgeWork = Split-Path -Parent $PSScriptRoot
+$BridgeRoot = Join-Path $BridgeWork 'bridge'
+$DeploymentRoot = Join-Path (Split-Path -Parent $BridgeWork) 'deployment\DeepSeek-Harness-Windows'
+$BridgeNode = Join-Path $DeploymentRoot 'runtime\node-v24.15.0-win-x64\node.exe'
+if ($env:QQ_BRIDGE_NODE) { $BridgeNode = $env:QQ_BRIDGE_NODE }
+if (!(Test-Path -LiteralPath $BridgeNode -PathType Leaf)) { throw 'Node runtime missing. Prepare deployment first or set QQ_BRIDGE_NODE to a local node.exe.' }
+$env:TEMP = Join-Path $BridgeWork 'temp'
+$env:TMP = $env:TEMP
+$env:npm_config_cache = Join-Path $BridgeWork 'cache\npm'
+$env:XDG_CACHE_HOME = Join-Path $BridgeWork 'cache'
+$env:NODE_COMPILE_CACHE = Join-Path $BridgeWork 'cache\node-compile'
+$env:DSH_LAUNCH_TOKEN = $null
+$env:SNOWLUMA_HOME = $null
+$env:SNOWLUMA_TOKEN = $null
+$env:SNOWLUMA_HTTP_URL = $null
+$env:QQ_BRIDGE_TEST_LIVE = '0'
+$env:QQ_WORKSPACE_DSH_ANCHOR = Join-Path $DeploymentRoot 'engine\node_modules\@deepseek-ai\dsh\package.json'
+$env:PATH = (Split-Path -Parent $BridgeNode) + ';' + $env:PATH

@@ -1,0 +1,8 @@
+{
+  "selectedVoice": "../local-voice/selected-voice.json",
+  "python": "../local-voice/runtime/python.exe",
+  "engine": "../local-voice/engine",
+  "pretrained": "../local-voice/pretrained",
+  "ffmpeg": "../local-voice/ffmpeg.exe",
+  "asrModel": "../local-voice/whisper-model"
+}

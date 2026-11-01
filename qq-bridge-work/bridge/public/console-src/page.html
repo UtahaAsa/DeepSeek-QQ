@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>QQ 桥接控制台</title>
+<script>{{CONSOLE:theme}}</script>
+<style>{{CONSOLE:styles}}</style>
+</head>
+<body>
+  <div class="bg-decor" aria-hidden="true"></div>
+  <a class="skip-link" href="#mainContent">跳到主要内容</a>
+  <aside class="sidebar" aria-label="控制台导航">
+    <a href="#overview" class="brand"><span class="brand-mark" aria-hidden="true">q<span>↗</span></span><span>QQ Bridge<small>DeepSeek Harness 控制台</small></span></a>
+    <div class="nav-label">工作空间</div>
+    <nav id="mainNav">
+      <button data-view="overview" class="nav-item active" aria-current="page"><span class="nav-icon" aria-hidden="true">◫</span>运行总览</button>
+      <button data-view="sessions" class="nav-item"><span class="nav-icon" aria-hidden="true">☷</span>会话与审批<span class="nav-count" id="pendingCount">—</span></button>
+      <button data-view="persona" class="nav-item"><span class="nav-icon" aria-hidden="true">◉</span>人格与角色</button>
+      <div class="nav-label">聊天行为</div>
+      <button data-view="social-v2" class="nav-item"><span class="nav-icon" aria-hidden="true">◈</span>二代仿真<span class="nav-note">V2</span></button>
+      <button data-view="social-v1" class="nav-item"><span class="nav-icon" aria-hidden="true">◇</span>一代仿真<span class="nav-note">V1</span></button>
+      <button data-view="slang" class="nav-item"><span class="nav-icon" aria-hidden="true">▤</span>黑话词库</button>
+      <div class="nav-label">管理</div>
+      <button data-view="usage" class="nav-item"><span class="nav-icon" aria-hidden="true">◧</span>令牌与花费</button>
+      <button data-view="access" class="nav-item"><span class="nav-icon" aria-hidden="true">⊙</span>访问与安全</button>
+      <button data-view="operations" class="nav-item"><span class="nav-icon" aria-hidden="true">⌘</span>调试与运维</button>
+      <button data-view="reference" class="nav-item"><span class="nav-icon" aria-hidden="true">ⓘ</span>工具参考</button>
+    </nav>
+    <div class="sidebar-bottom"><span class="local-dot"></span>本地控制台<small>QQ ↔ DeepSeek Harness</small></div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar">
+      <div class="breadcrumb">工作空间<span>/</span><span id="breadcrumbPage">运行总览</span></div>
+      <div class="topbar-actions"><span class="status-badge" id="statusText" role="status">正在连接…</span><button id="themeToggle" class="icon-button" type="button" aria-label="切换深色模式" aria-pressed="false" title="切换深色 / 浅色主题">☾</button><button id="refreshConsole" class="icon-button" aria-label="刷新控制台状态" title="刷新状态">↻</button></div>
+    </header>
+    <main id="mainContent" tabindex="-1">
+      <div class="page-heading"><div><div class="eyebrow">QQ BRIDGE / CONSOLE</div><h1 id="pageTitle">让每一次连接，都自然发生。</h1><p id="pageDescription">掌握桥接状态，轻松管理你的 QQ 智能伙伴。</p></div>
+        <div class="search-wrap"><label class="sr-only" for="consoleSearch">搜索功能或参数</label><input id="consoleSearch" type="search" placeholder="搜索功能或参数…" autocomplete="off" aria-controls="searchResults" aria-expanded="false"><div id="searchResults" class="search-results" hidden></div></div>
+      </div>
+      <div id="connectionAlert" class="connection-alert" role="alert" hidden></div>
+      <div id="overviewSummary" class="overview-summary span-all" data-page="overview">
+        <div class="metric"><span>DSH 连接</span><strong id="metricDsh">连接中</strong><small id="metricDshHint">等待服务响应</small></div>
+        <div class="metric"><span>QQ 网关</span><strong id="metricSnowluma">读取中</strong><small id="metricSnowlumaHint">等待网关健康上报</small></div>
+        <div class="metric"><span>当前运行模式</span><strong id="metricMode">—</strong><small id="metricRole">正在读取角色</small></div>
+        <button class="metric metric-link" data-view="sessions"><span>已建立会话</span><strong id="metricSessions">—</strong><small>查看会话映射 <span aria-hidden="true">↗</span></small></button>
+        <button class="metric metric-link" data-view="sessions" data-target="section-pending"><span>待处理请求</span><strong id="metricPending">—</strong><small>提问与工具审批 <span aria-hidden="true">↗</span></small></button>
+      </div>
+      <div class="grid">
+        {{CONSOLE:section:mode}}
+{{CONSOLE:section:sessions}}
+{{CONSOLE:section:pending}}
+{{CONSOLE:section:activity}}
+{{CONSOLE:section:persona}}
+{{CONSOLE:section:social-v1}}
+{{CONSOLE:section:social-v2}}
+{{CONSOLE:section:slang}}
+{{CONSOLE:section:reference}}
+{{CONSOLE:section:whitelist}}
+{{CONSOLE:section:silent}}
+{{CONSOLE:section:dsh}}
+{{CONSOLE:section:security}}
+{{CONSOLE:section:token}}
+{{CONSOLE:section:maintenance}}
+{{CONSOLE:section:notify}}
+{{CONSOLE:section:usage}}
+      </div>
+      <div class="overview-footnote" data-page="overview"><span id="accessSummary">正在读取访问范围…</span><button class="text-button" data-view="access">管理访问范围 →</button></div>
+      <footer class="page-footer"><span>QQ Bridge · 连接日常，保持自主</span><span id="lastUpdated">等待首次同步</span></footer>
+    </main>
+  </div>
+      <div class="modal-overlay" id="slangModalOverlay">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="slangModalTitle" tabindex="-1">
+        <h3 id="slangModalTitle">确认黑话</h3>
+        <div class="meta" id="slangModalContent" style="margin-bottom:6px"></div>
+        <label>含义 *</label>
+        <input type="text" id="slangModalMeaning" placeholder="必须填写，确认后才会注入 AI 上下文">
+        <label>用法（可选）</label>
+        <input type="text" id="slangModalUsage" placeholder="使用场景 / 语气">
+        <label>示例（可选）</label>
+        <input type="text" id="slangModalExample" placeholder="自然短句示例">
+        <label>风险/慎用说明（可选）</label>
+        <input type="text" id="slangModalRisk" placeholder="敏感 / 慎用风险">
+        <label>参考来源（可选，每行一个 URL）</label>
+        <textarea id="slangModalSources" rows="3" placeholder="https://..."></textarea>
+        <div class="row">
+          <button id="slangModalDirectConfirm" class="small">直接确认（转正）</button>
+          <button id="slangModalSendResearch" class="small">送 DSH 深度研究</button>
+          <button id="slangModalCancel" class="small">取消</button>
+        </div>
+      </div>
+    </div>
+
+
+  <div class="toast" id="consoleToast" role="status" hidden></div>
+  <noscript><div class="connection-alert">控制台需要启用 JavaScript 才能加载状态及保存设置。</div></noscript>
+
+<script>{{CONSOLE:scripts}}</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<section id="section-security" data-page="access" class="card">
+      <h2>安全拦截通知</h2>
+      <div class="row">
+        <label style="flex:1">拦截时在群里发提示</label><input type="checkbox" id="secInterceptNotify" style="width:auto">
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button id="secSave" class="small">保存安全设置</button>
+        <span class="meta" id="secMsg"></span>
+      </div>
+      <div class="meta">开启：回复被安全拦截时会在群里提示；关闭：直接沉默，只在日志/活动记录里留下记录。</div>
+      <div id="stateDirWarn" style="display:none;margin-top:10px;padding:8px 10px;border-left:3px solid var(--warn,#d08700);background:rgba(208,135,0,.08)">
+        <b>⚠️ state/ 目录权限未收紧</b>
+        <div class="meta" style="margin:4px 0">Windows 上改文件权限需要管理员身份，本次启动没能收紧 <code id="stateDirPath"></code>。它里面的控制台令牌、网关连接信息、各会话令牌与 QQ 聊天记录，本机其他已登录用户可能读到。</div>
+        <div class="meta">两种做法：① 用<b>管理员身份</b>打开终端执行下面这条命令（一次即可，可复制）；② 或者<b>用管理员身份重启桥接</b>，让它自己收紧。做完点下面的按钮复检。</div>
+        <pre id="stateDirCmd" style="user-select:all;overflow:auto;margin:4px 0;padding:6px;background:rgba(127,127,127,.12);border-radius:4px"></pre>
+        <button id="stateDirReharden" class="small">重新检测</button>
+        <span class="meta" id="stateDirMsg"></span>
+      </div>
+      <div id="snowlumaWarn" style="display:none;margin-top:10px;padding:8px 10px;border-left:3px solid var(--warn,#d08700);background:rgba(208,135,0,.08)">
+        <b>⚠️ QQ 网关接收状态需要检查</b>
+        <div class="meta" style="margin:4px 0" id="snowlumaWarnHint"></div>
+        <div class="meta" id="snowlumaWarnDiag">最近一个网关事件包：<b id="snowlumaWarnPkt">unknown</b>；网关上报接收状态 good=<b id="snowlumaWarnGood">unknown</b>。</div>
+        <div class="meta" style="margin:4px 0">连接状态、账号在线状态和接收状态是不同的信号。网关上报异常或长时间没有事件，都需要结合日志检查；仅凭这些信号不能确定故障原因。</div>
+        <div class="meta">排查：先查看服务状态、QQ 登录状态及网关和桥接日志。需要处理服务时使用项目的「服务救援」，保留当前日志供定位。</div>
+      </div>
+    </section>

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QQ 文字接收验证</title><link rel="stylesheet" href="/page.css"><script src="/page.js" defer></script></head>
+<body><main>
+  <p class="eyebrow">DeepSeek · QQ 接入研究</p><h1>文字接收验证</h1>
+  <p>本轮只接收一个好友、一个群的新文字，发送能力已关闭。请先正常退出桌面 QQ，手机 QQ 保持登录。</p>
+  <section class="panel"><h2>1. 选择测试范围</h2>
+    <fieldset id="scope-fields"><legend class="sr-only">本机测试对象</legend>
+      <label for="friend-id">测试好友 QQ 号<input id="friend-id" inputmode="numeric" autocomplete="off" maxlength="20" pattern="[1-9][0-9]{0,19}" required></label>
+      <label for="group-id">测试群号<input id="group-id" inputmode="numeric" autocomplete="off" maxlength="20" pattern="[1-9][0-9]{0,19}" required></label>
+    </fieldset>
+    <p class="note">目标只在本机试验进程中使用，不要填写本次登录账号自己。</p>
+  </section>
+  <section class="panel"><h2>2. 手动扫码登录</h2><p id="status" role="status" aria-live="polite">尚未开始</p>
+    <div class="qr-frame" id="qr-frame"><img id="qr" alt="使用手机 QQ 扫描此登录二维码" width="256" height="256" hidden><p id="placeholder">二维码会显示在这里</p></div>
+    <div class="actions"><button id="start">开始扫码登录</button><button id="refresh" hidden>重新获取二维码</button><button id="stop" class="secondary">停止试验</button></div>
+    <p id="error" role="alert"></p>
+  </section>
+  <section class="panel"><h2>3. 等待测试短句</h2>
+    <p>请让测试好友私聊发送 <code>桥接私聊入站测试</code>，让测试群中其他成员发送 <code>桥接群聊入站测试</code>。不要用本次登录账号自己发送。</p>
+    <dl class="checks" aria-live="polite"><dt>私聊入站</dt><dd id="private-in">等待</dd><dt>群聊入站</dt><dd id="group-in">等待</dd></dl>
+  </section>
+  <p class="note">本轮最长 5 分钟，两个短句齐全后自动结束，也可随时停止。仅报告计数与布尔状态，不保存二维码、目标号码、消息正文或消息ID。此模式不验证发送或重连。</p>
+</main></body></html>

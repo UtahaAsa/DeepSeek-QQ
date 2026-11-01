@@ -1,0 +1,22 @@
+{
+  "kind": "isolated_ntrtc_pcm_candidate",
+  "hostSha256": "612e13612fb1118f5f525ed073325605612f8cb4e25eece418e404dbf66d28d9",
+  "sources": {
+    "node-host.cpp": "82f45a15338cfee1fc5acd3831d733f97d158f7439283a87206857c379bc90c4",
+    "ntrtc-pcm.hpp": "6b725b65921402b0c3794c03ef02aa71bca4d808850702b7cb62028d0a3bd612",
+    "private-signaling.hpp": "36056d0b3f796cf84a82b7a34e9a35dfd43d3b53d231090adeec2950ba69ff76"
+  },
+  "baseSourceSha256": {
+    "node-host.cpp": "f96a4e542f6747e4aa98c056fcd77b835d66b4f2478cd9552f82065359642c91",
+    "ppapi-node-codec.hpp": "bedb94311cc412784b53d5d84f40c6c92a3d8a0f3a0d77fac9764cf72e4dbe4f",
+    "liteav-audio-offline.hpp": "addce3e680286b6704db4d0bca9004249fc3a73d99f80089dabf838fcb7fc09a",
+    "liteav-pcm-stream.hpp": "861db05042c74cc5ff8d28feb8f54bd0c55f4a0bb0290b42431f241e2d161abf",
+    "private-signaling.hpp": "966ecd0e57acec9f7280e285eaac5ba04afca5d51083f22997dbb4e5a0ddd5ad",
+    "probe.cpp": "5cc72fefdcfe08dd00b86f8a5261462f82bb2306b52cd4c33d2150f7567d9dca",
+    "ppapi-var.hpp": "73eb12a1eb3a1f3592ff67edcac0f8cb37244b971348715ca684300475e49441",
+    "unsupported-interface-tables.inc": "6240d1da9bf39ee528c846c48efd4056067531fc0d36284fc86aaf7d9e182c67",
+    "trace-self.hpp": "743a2bdd2a215dfa11c725d9303366c4417b2224ecb89afbc3e2789855fb1d60"
+  },
+  "nodeSha256": "3331e1ffe19874215472217c5e94f5a0c6d8e18c4ac7111d3937aa0ad5e9b4a5",
+  "productionWorkerChanged": false
+}

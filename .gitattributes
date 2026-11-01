@@ -1,0 +1,6 @@
+# Native source and vendored codec files are checked by byte digest at runtime.
+# Preserve bytes on checkout instead of changing line endings on Windows.
+* -text
+*.png binary
+*.webp binary
+*.wasm binary

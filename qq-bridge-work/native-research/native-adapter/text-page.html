@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QQ 文字收发验证</title><link rel="stylesheet" href="/page.css"><script src="/page.js" defer></script></head>
+<body><main>
+  <p class="eyebrow">DeepSeek · QQ 接入研究</p><h1>文字收发验证</h1>
+  <p>本轮只测试一个好友、一个群，最多发送两条固定文字。请先正常退出桌面 QQ，手机 QQ 保持登录。</p>
+  <section class="panel" aria-labelledby="scope-title">
+    <h2 id="scope-title">1. 选择测试范围</h2>
+    <fieldset id="scope-fields"><legend class="sr-only">本机测试对象</legend>
+      <label for="friend-id">测试好友 QQ 号<input id="friend-id" inputmode="numeric" autocomplete="off" maxlength="20" pattern="[1-9][0-9]{0,19}" required></label>
+      <label for="group-id">测试群号<input id="group-id" inputmode="numeric" autocomplete="off" maxlength="20" pattern="[1-9][0-9]{0,19}" required></label>
+    </fieldset>
+    <p class="note">目标只在本机试验进程中使用。好友栏填写另一个账号，不要填本次登录账号自己。</p>
+  </section>
+  <section class="panel" aria-labelledby="status-title">
+    <h2 id="status-title">2. 手动扫码登录</h2><p id="status" role="status" aria-live="polite">尚未开始</p>
+    <div class="qr-frame" id="qr-frame"><img id="qr" alt="使用手机 QQ 扫描此登录二维码" width="256" height="256" hidden><p id="placeholder">二维码会显示在这里</p></div>
+    <div class="actions"><button id="start">开始扫码登录</button><button id="refresh" hidden>重新获取二维码</button><button id="stop" class="secondary">停止试验</button></div>
+    <p id="error" role="alert"></p>
+  </section>
+  <section class="panel" aria-labelledby="messages-title">
+    <h2 id="messages-title">3. 验证文字收发</h2>
+    <p>登录完成后，请让测试好友、测试群中的其他成员分别发送下面的短句。不要用机器人账号自己发送入站短句。</p>
+    <p>私聊：<code>桥接私聊入站测试</code><br>群聊：<code>桥接群聊入站测试</code></p>
+    <dl class="checks" aria-live="polite"><dt>私聊入站</dt><dd id="private-in">等待测试短句</dd><dt>群聊入站</dt><dd id="group-in">等待测试短句</dd><dt>私聊发送</dt><dd id="private-out">尚未发送</dd><dt>群聊发送</dt><dd id="group-out">尚未发送</dd></dl>
+    <div class="actions"><button id="send-private" disabled>向好友发送测试文字</button><button id="send-group" disabled>向群发送测试文字</button></div>
+    <p class="note">固定发送：<code>QQ桥接私聊连通测试</code>、<code>QQ桥接群聊连通测试</code>。每类只尝试一次，结果不确定时不会重发。</p>
+    <label class="receipt"><input type="checkbox" id="confirm-private" disabled>已在接收方确认私聊测试文字到达</label>
+    <label class="receipt"><input type="checkbox" id="confirm-group" disabled>已确认群内测试文字到达</label>
+  </section>
+  <section class="panel" aria-labelledby="reconnect-title">
+    <h2 id="reconnect-title">4. 验证连接恢复</h2>
+    <p>两条发送均确认后，点击下面按钮，再请测试好友和群成员各发送一次上面的入站短句。</p>
+    <button id="reconnect" disabled>重连本机桥接一次</button>
+    <dl class="checks" aria-live="polite"><dt>本机连接</dt><dd id="reconnect-state">尚未重连</dd><dt>重连后私聊</dt><dd id="private-after">等待</dd><dt>重连后群聊</dt><dd id="group-after">等待</dd></dl>
+  </section>
+  <p class="note">本轮最长 10 分钟。全部检查完成后自动结束，也可随时停止。二维码、目标号码和消息正文不进入脱敏报告。</p>
+</main></body></html>

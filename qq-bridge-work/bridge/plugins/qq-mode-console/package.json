@@ -1,0 +1,23 @@
+{
+  "name": "qq-mode-console",
+  "version": "0.2.1-r2",
+  "description": "DSH QQ工作台：角色、授权范围、功能模块与热配置",
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": { ".": "./lib/index.js", "./client": "./lib/client.js", "./package.json": "./package.json" },
+  "license": "MIT",
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": ["@deepseek-ai/dsh-client-ui-settings", "@deepseek-ai/dsh-client-ui-layout", "@deepseek-ai/dsh-client-ui-sidebar"],
+      "external": ["react", "@deepseek-ai/dsh-client-ui-primitives"]
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/dsh": "0.2.1-rc.2",
+    "@deepseek-ai/schemastery": "~3.18.5"
+  }
+}

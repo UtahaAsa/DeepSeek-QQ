@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "engineRevision": "8f2fdbf483955f924b4c87ab34919170d0b704ed",
+  "enabled": false,
+  "device": "cuda:0",
+  "half": true,
+  "voiceModel": { "path": "models/dafeiyu-v2.pth", "sha256": null },
+  "index": null,
+  "baseAssets": {
+    "engine/assets/hubert_base/config.json": null,
+    "engine/assets/hubert_base/preprocessor_config.json": null,
+    "engine/assets/hubert_base/pytorch_model.bin": null,
+    "engine/assets/rmvpe/rmvpe.pt": null
+  },
+  "ffmpegSha256": null
+}

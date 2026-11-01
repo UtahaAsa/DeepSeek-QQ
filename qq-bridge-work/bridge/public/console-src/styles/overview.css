@@ -1,0 +1,122 @@
+
+.page-heading {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  margin-bottom:30px
+}
+.eyebrow {
+  color:var(--eyebrow);
+  font-size:10px;
+  letter-spacing:2px;
+  font-weight:600;
+  margin-bottom:10px
+}
+h1 {
+  font-size:29px;
+  font-weight:600;
+  letter-spacing:-.9px;
+  line-height:1.4;
+  margin:0 0 9px
+}
+.page-heading p {
+  font-size:13px;
+  color:var(--muted)
+}
+.search-wrap {
+  position:relative;
+  flex:0 0 238px
+}
+.search-wrap input {
+  background:var(--surface);
+  padding:10px 14px;
+  border-radius:10px;
+  font-size:12px
+}
+.search-results {
+  position:absolute;
+  right:0;
+  top:48px;
+  width:360px;
+  max-width:80vw;
+  max-height:420px;
+  overflow:auto;
+  background:var(--surface);
+  border:1px solid var(--card-border);
+  padding:7px;
+  border-radius:12px;
+  box-shadow:var(--shadow-pop);
+  z-index:50
+}
+.search-results button {
+  display:block;
+  text-align:left;
+  width:100%;
+  border:0;
+  font-size:12px;
+  padding:10px
+}
+.search-results button small {
+  display:block;
+  color:var(--muted);
+  font-size:11px
+}
+.search-results p {
+  padding:15px;
+  color:var(--muted);
+  font-size:12px
+}
+.overview-summary {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:0;
+  background:var(--surface);
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  margin-bottom:24px;
+  padding:23px 0
+}
+.metric {
+  padding:0 26px;
+  border:0;
+  border-right:1px solid var(--card-border);
+  background:transparent;
+  border-radius:0;
+  text-align:left;
+  min-width:0
+}
+.metric:last-child {
+  border:0
+}
+.metric>span {
+  font-size:12px;
+  color:var(--muted);
+  display:block
+}
+.metric strong {
+  display:block;
+  font-size:25px;
+  line-height:1.5;
+  margin:8px 0 3px;
+  font-weight:600;
+  letter-spacing:-.5px
+}
+.metric small {
+  display:block;
+  font-size:11px;
+  color:var(--muted-soft)
+}
+.metric-link:hover {
+  background:var(--surface-hover)
+}
+.metric-link small span {
+  float:right;
+  color:var(--accent)
+}
+#metricMode {
+  font-size:22px
+}
+#metricSnowluma {
+  font-size:19px
+}

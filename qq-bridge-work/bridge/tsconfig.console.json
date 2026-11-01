@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleDetection": "legacy",
+    "strict": true,
+    "noEmit": true,
+    "types": [],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": false,
+    "newLine": "lf"
+  },
+  "files": [
+    "public/console-src/types/dom-contract.d.ts",
+    "public/console-src/scripts/theme-bootstrap.ts",
+    "public/console-src/scripts/core.ts",
+    "public/console-src/scripts/roles.ts",
+    "public/console-src/scripts/prompt-editor.ts",
+    "public/console-src/scripts/settings-loaders.ts",
+    "public/console-src/scripts/mode-bindings.ts",
+    "public/console-src/scripts/role-bindings.ts",
+    "public/console-src/scripts/prompt-bindings.ts",
+    "public/console-src/scripts/access-operations.ts",
+    "public/console-src/scripts/voice.ts",
+    "public/console-src/scripts/v2-settings.ts",
+    "public/console-src/scripts/v2-tools-memory.ts",
+    "public/console-src/scripts/v2-wake-status.ts",
+    "public/console-src/scripts/initial-prompts.ts",
+    "public/console-src/scripts/v2-sessions-activity.ts",
+    "public/console-src/scripts/legacy-social.ts",
+    "public/console-src/scripts/slang.ts",
+    "public/console-src/scripts/security.ts",
+    "public/console-src/scripts/navigation.ts",
+    "public/console-src/scripts/usage-chart.ts",
+    "public/console-src/scripts/usage-ledger.ts",
+    "public/console-src/scripts/startup-theme.ts"
+  ]
+}
